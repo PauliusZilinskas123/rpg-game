@@ -1,13 +1,13 @@
 import React from 'react';
 import styles from '../../src/components/test.scss';
-//import styles from 'styles/common/button.scss';
+import Navigation from './Navigation.jsx'
 
-console.log(styles);
-
-const Header = () => (
-  <div className="header">
-    Header part <span className={styles.testBg}>test</span>
-  </div>
-);
+class Header extends React.Component {
+  render() {
+    return(
+      <h1>header</h1>
+    );
+  }
+}
 
 export default Header;

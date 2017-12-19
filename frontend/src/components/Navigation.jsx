@@ -1,14 +1,25 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import Login from './Login.jsx'
 
-const Navigation = () => (
-  <div>
-    <ul>
-      <li><Link to="/">Home</Link></li>
-      <li><Link to="/about">About</Link></li>
-      <li><Link to="/sample">Sample</Link></li>
-    </ul>
-  </div>
-);
+class Navigation extends React.Component {
+  render() {
+    return (
+    <nav className="navbar navbar-inverse">
+      <div className="container-fluid">
+        <div className="navbar-header">
+          <a className="navbar-brand" href="#">RPG-game</a>
+        </div>
+        <ul className="nav navbar-nav">
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/characters">Characters</Link></li>
+          <li><Link to="/inventory">Inventory</Link></li>
+        </ul>
+        <Login/>
+      </div>
+    </nav>
+    )
+  }
+}
 
 export default Navigation;

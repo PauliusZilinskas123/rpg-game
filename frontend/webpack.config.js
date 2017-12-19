@@ -15,6 +15,21 @@ loaders.push({
   exclude: ['node_modules']
 });
 
+loaders.push({
+  test: /\.svg$/,
+  use: [
+    {
+      loader: "babel-loader"
+    },
+    {
+      loader: "react-svg-loader",
+      options: {
+        jsx: true // true outputs JSX tags
+      }
+    }
+  ]
+})
+
 module.exports = {
   entry: [
     'react-hot-loader/patch',

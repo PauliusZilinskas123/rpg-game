@@ -1,1 +1,1 @@
-CompileDaemon.exe -command="./game_backend.exe"
+CompileDaemon.exe -command="./backend.exe"
