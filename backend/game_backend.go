@@ -20,7 +20,7 @@ import (
 )
 
 type Character struct {
-	UserId		string 		`json:"user-id" form:"user-id"`
+	UserID		string 		`json:"user-id" form:"user-id"`
 	Name    	string 		`json:"name" form:"name"`
 	Title 		string 		`json:"title" form:"title"`
 	Attributes 	[]string 	`json:"attributes" form:"attributes"`
@@ -50,7 +50,7 @@ type User struct {
 
 type ClientState struct {
 	State string `json:"state"`
-	UserId string `json:"user-id"`
+	UserID string `json:"user-id"`
 	ValidFrom string `json:"valid-from"`
 }
 
@@ -116,7 +116,7 @@ func MiddleDB(mongo *mgo.Session) gin.HandlerFunc {
 				c.Abort()
 			}
 		}
-		log.Println("Found " + clientState.UserId + " asd")
+		log.Println("Found " + clientState.UserID + " asd")
 		c.Set("state", clientState)
 		c.Next()
 	}
@@ -128,7 +128,7 @@ func AuthorizeRequest() gin.HandlerFunc {
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not get state"})
 		}
-		v := s.UserId
+		v := s.UserID
 		if v == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -162,7 +162,7 @@ func authHandler(c *gin.Context) {
 	log.Println("Email body: ", string(data))
 	var user User
 	json.Unmarshal(data, &user)
-	retrievedState.UserId = user.Email
+	retrievedState.UserID = user.Email
 	//s, ok := c.Keys["mongo"].(*mgo.Session)
 	s := c.Keys["mongo"].(*mgo.Session)
 	s = s.Copy()
@@ -170,7 +170,7 @@ func authHandler(c *gin.Context) {
 
 	
 	sess := s.DB("game").C("sessions")
-	log.Println("Try to upsert ", retrievedState.UserId)
+	log.Println("Try to upsert ", retrievedState.UserID)
 	log.Println("By state ", retrievedState.State)
 	err = sess.Update(bson.M{"state": retrievedState.State}, &retrievedState)
 	if err != nil {
@@ -291,9 +291,9 @@ func allCharacters(c *gin.Context) {
 	character := s.DB("game").C("characters")
 
 	var characters []Character
-	err := character.Find(bson.M{"userid" : c.Keys["state"].(ClientState).UserId}).All(&characters)
+	err := character.Find(bson.M{"userid" : c.Keys["state"].(ClientState).UserID}).All(&characters)
 	//err := character.Find(bson.M{}).All(&characters)
-	log.Println("looking for "+c.Keys["state"].(ClientState).UserId+" characters")
+	log.Println("looking for "+c.Keys["state"].(ClientState).UserID+" characters")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
 		//ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
@@ -305,7 +305,7 @@ func allCharacters(c *gin.Context) {
 
 func getLogin(c *gin.Context) {
 	state := c.Keys["state"].(ClientState)
-	c.JSON(http.StatusOK, gin.H{"url": getLoginURL(state.State), "state": state.State, "user": state.UserId})
+	c.JSON(http.StatusOK, gin.H{"url": getLoginURL(state.State), "state": state.State, "user": state.UserID})
 }
 
 func getState(c *gin.Context) {
@@ -327,7 +327,7 @@ func addCharacter(c *gin.Context) {
 	} else {
 		log.Println("still shit")
 	}
-	char.UserId = c.Keys["state"].(ClientState).UserId
+	char.UserID = c.Keys["state"].(ClientState).UserID
 
 	characters := s.DB("game").C("characters")
 	log.Println(char)
@@ -358,7 +358,7 @@ func characterByName(c *gin.Context){
 	chars := session.DB("game").C("characters")
 
 	var character Character
-	err := chars.Find(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserId}).One(&character)
+	err := chars.Find(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserID}).One(&character)
 
 	if err != nil {
 		switch err {
@@ -390,9 +390,9 @@ func updateCharacter(c *gin.Context) {
 	}
 
 	chars := session.DB("game").C("characters")
-	character.UserId = c.Keys["state"].(ClientState).UserId
+	character.UserID = c.Keys["state"].(ClientState).UserID
 	//err, id = c.Upsert(bson.M{"name": name}, &character)
-	err := chars.Update(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserId}, &character)
+	err := chars.Update(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserID}, &character)
 	if err != nil {
 		switch err {
 		default:
@@ -415,9 +415,9 @@ func deleteCharacter(c *gin.Context) {
 
 	chars := session.DB("game").C("characters")
 
-	log.Println(c.Param("name")+" " + c.Keys["state"].(ClientState).UserId)
+	log.Println(c.Param("name")+" " + c.Keys["state"].(ClientState).UserID)
 
-	err := chars.Remove(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserId})
+	err := chars.Remove(bson.M{"name": c.Param("name"), "userid": c.Keys["state"].(ClientState).UserID})
 	if err != nil {
 		switch err {
 		default:
