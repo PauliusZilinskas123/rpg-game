@@ -1,3 +1,20 @@
+// go-swagger examples.
+//
+// The purpose of this application is to provide some
+// use cases describing how to generate docs for your API
+//
+//     Schemes: http
+//     Host: localhost:8080
+//     BasePath: /
+//     Version: 0.0.1
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
 package main
 
 import (
@@ -19,7 +36,13 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
+// A Character model.
+//
+// This is used for operations that want an character as body of the request
+// swagger:parameters character
 type Character struct {
+	//in: body
+	//required: true
 	UserID		string 		`json:"user-id" form:"user-id"`
 	Name    	string 		`json:"name" form:"name"`
 	Title 		string 		`json:"title" form:"title"`
@@ -28,6 +51,14 @@ type Character struct {
 	Experience	int 		`json:"experience" form:"experience"`
 }
 //
+// An Message model.
+//
+// This is used for operations that returns message
+// swagger:response message
+type Message struct {
+	//in: body
+	content string `json:"content"`
+}
 
 type Credentials struct {
 	Web struct {
@@ -313,6 +344,14 @@ func getState(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"state": retrievedState})
 }
 
+// addCharacter swagger:route POST /characters characters character
+//
+// Handler to create a character.
+//
+// Responses:
+//        200: message
+//        400: message
+//        401: message
 func addCharacter(c *gin.Context) {
 	s, ok := c.Keys["mongo"].(*mgo.Session)
 	if !ok {
